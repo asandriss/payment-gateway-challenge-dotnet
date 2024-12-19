@@ -1,4 +1,7 @@
+using PaymentGateway.Abstraction;
+using PaymentGateway.Api.Middleware;
 using PaymentGateway.Api.Services;
+using PaymentGateway.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +12,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddSingleton<IApiKeysRepository, ApiKeysRepository>();
 builder.Services.AddSingleton<PaymentsRepository>();
 
 var app = builder.Build();
@@ -21,6 +25,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ApiKeyValidationMiddleware>();
 
 app.UseAuthorization();
 

@@ -13,9 +13,10 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IApiKeysRepository, ApiKeysRepository>();
 builder.Services.AddSingleton<ICurrencyProvider, CurrencyProvider>();
+builder.Services.AddSingleton<IPaymentsRepository, PaymentsRepository>();
+
 builder.Services.AddTransient<IPaymentProcessor, PaymentProcessorService>();
 builder.Services.AddTransient<IBank, SimulatorBank>();
-builder.Services.AddSingleton<IPaymentsRepository, PaymentsRepository>();
 
 var app = builder.Build();
 

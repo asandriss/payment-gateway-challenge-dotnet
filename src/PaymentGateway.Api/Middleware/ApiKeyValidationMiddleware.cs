@@ -7,7 +7,6 @@ namespace PaymentGateway.Api.Middleware;
 public class ApiKeyValidationMiddleware(RequestDelegate next, IApiKeysRepository apiKeys)
 {
     private const string ApiKeyHeaderName = "Authorization";
-    private readonly RequestDelegate _next = next;
 
     public async Task InvokeAsync(HttpContext context)
     {
@@ -27,7 +26,7 @@ public class ApiKeyValidationMiddleware(RequestDelegate next, IApiKeysRepository
             merchantId =>
             {
                 context.Items["MerchantId"] = merchantId;
-                _next(context);
+                next(context);
             },
             () =>
             {

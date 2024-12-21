@@ -15,10 +15,8 @@ public class PaymentsControllerTestFactory
     {
         var repo = paymentsRepository ?? new PaymentsRepository();
         var webApplicationFactory = new WebApplicationFactory<PaymentsController>();
-        //var client = webApplicationFactory.CreateClient();
         var paymentProcessorMock = new Mock<IPaymentProcessor>();
-
-
+        
         var client = webApplicationFactory.WithWebHostBuilder(builder =>
                 builder.ConfigureServices(services =>
                 {

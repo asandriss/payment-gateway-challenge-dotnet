@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PaymentGateway.Abstraction
+namespace PaymentGateway.Abstraction.Models
 {
     public record PaymentProcessorRequest(
         Guid RequestId,
-        string CardNumber,
-        string ExpiryDate,
+        long CardNumber,
+        int ExpiryMonth,
+        int ExpiryYear,
         string Currency,
         int Amount,
-        string Cvv)
-    {
-    }
+        int Cvv
+    );
 }

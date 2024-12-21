@@ -1,26 +1,21 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Mvc.Testing;
 
 using FluentAssertions;
 
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.DependencyInjection;
-
-using PaymentGateway.Abstraction;
 using PaymentGateway.Api.Controllers;
-using PaymentGateway.Api.Models;
+using PaymentGateway.Abstraction.Enum;
+using PaymentGateway.Abstraction.Models;
 using PaymentGateway.Api.Models.Responses;
-using PaymentGateway.Api.Services;
-using Moq;
+using PaymentGateway.Services;
 
 namespace PaymentGateway.Api.Tests;
-
-
 
 public class GetPaymentEndpointTests
 {
     private readonly Random _random = new();
-    
+
     [Fact]
     public async Task RetrievesAPaymentSuccessfully()
     {
@@ -40,13 +35,13 @@ public class GetPaymentEndpointTests
         var paymentsRepository = new PaymentsRepository();
         paymentsRepository.Add(payment);
 
-        var client = GetWebClient(paymentsRepository);
+        var client = PaymentsControllerTestFactory.GetWebClient(paymentsRepository);
         client.DefaultRequestHeaders.Add("Authorization", "key-123456");
 
         // Act
         var response = await client.GetAsync($"/api/Payments/{payment.Id}");
-        var paymentResponse = await response.Content.ReadFromJsonAsync<PostPaymentResponse>();
-        
+        var paymentResponse = await response.Content.ReadFromJsonAsync<GetPaymentResponse>();
+
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         paymentResponse.Should().NotBeNull();
@@ -59,7 +54,7 @@ public class GetPaymentEndpointTests
         // Arrange
         var paymentsRepository = new PaymentsRepository();
 
-        HttpClient client = GetWebClient(paymentsRepository);
+        HttpClient client = PaymentsControllerTestFactory.GetWebClient(paymentsRepository);
         client.DefaultRequestHeaders.Add("Authorization", "key-123456");
 
         // Act
@@ -76,7 +71,7 @@ public class GetPaymentEndpointTests
         var webApplicationFactory = new WebApplicationFactory<PaymentsController>();
 
         var client = webApplicationFactory.CreateClient();
-        
+
         // Act
         var response = await client.GetAsync($"/api/Payments/{Guid.NewGuid()}");
 
@@ -84,21 +79,6 @@ public class GetPaymentEndpointTests
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
-        private static HttpClient GetWebClient(PaymentsRepository paymentsRepository)
-    {
-        var webApplicationFactory = new WebApplicationFactory<PaymentsController>();
-        //var client = webApplicationFactory.CreateClient();
-        var paymentProcessorMock = new Mock<IPaymentProcessor>();
-        
-
-        var client = webApplicationFactory.WithWebHostBuilder(builder =>
-                builder.ConfigureServices(services =>
-                {
-                    services.AddSingleton(paymentsRepository); // Add the payments repository
-                    services.AddSingleton(paymentProcessorMock.Object); // Add the mocked payment processor
-                }))
-            .CreateClient();
-        return client;
-    }
 
 }
+

@@ -1,9 +1,10 @@
 ﻿using BuildingBlocks;
+
 using LanguageExt;
 using LanguageExt.Common;
 
 using PaymentGateway.Abstraction;
-using PaymentGateway.Api.Models.Requests;
+using PaymentGateway.Abstraction.Models;
 
 namespace PaymentGateway.Api.Services
 {
@@ -12,17 +13,25 @@ namespace PaymentGateway.Api.Services
         public Validation<Error, PostPaymentRequest> ValidateRequest(PostPaymentRequest request)
         {
             return ValidateCardNumber(request.CardNumber)
+                .Bind(_ => ValidateAmount(request.Amount))
                 .Bind(_ => ValidateCurrency(request.Currency))
                 .Bind(_ => ValidateExpirationDate(request.ExpiryMonth, request.ExpiryYear))
                 .Bind(_ => ValidateCvv(request.Cvv))
                 .Map(_ => request); // if all is successful just return the original object
         }
 
+        public Validation<Error, int> ValidateAmount(int amount)            // this was not in the requirements, but it made sense. Other option would be to use unsigned int.
+        {
+            return amount > 0
+                ? Success(amount)
+                : Fail<int>($"Amount must be greater than zero");
+        }
+
         public Validation<Error, int> ValidateCvv(int cvv)
         {
             return cvv is > 99 and <= 9999
                 ? Success(cvv)
-                : Fail<int>("CVV must be between 3 and 4 characters long");
+                : Fail<int>($"CVV must be between 3 and 4 characters long. Was: [{cvv}]");
 
         }
 
@@ -36,7 +45,7 @@ namespace PaymentGateway.Api.Services
                     var lastDayOfMonth = new DateTime(year, month, 1).AddMonths(1).AddDays(-1);
                     return lastDayOfMonth >= SystemDateTime.Now.Date
                         ? Success((month, year))
-                        : Fail<(int, int)>("Expiry date must be in the future");
+                        : Fail<(int, int)>("Card expired");
                 })
                 .Map(_ => (month, year));
         }
@@ -61,7 +70,7 @@ namespace PaymentGateway.Api.Services
                 return Fail<string>("Currency must be three characters long.");
 
             return !currencyProvider.GetSupportedCurrencies().Contains(currency.ToUpper())          // the supported currencies provider could handle currency-specific validations here.
-                ? Fail<string>($"Unsupported currency {currency}")
+                ? Fail<string>($"Unsupported currency [{currency}]")
                 : Success(currency);
         }
 
@@ -76,7 +85,7 @@ namespace PaymentGateway.Api.Services
 
             return IsValidLuhn(cardNumber)
                 ? Success(cardNumber)
-                : Fail<long>($"Luhn checksum check failed for card [{card.Length}]");
+                : Fail<long>($"Luhn checksum check failed for card [{cardNumber}]");            // I'm not sure about this one - here we're returning an incorrect card number to the client
         }
 
         private static bool IsValidLuhn(long cardNumber)

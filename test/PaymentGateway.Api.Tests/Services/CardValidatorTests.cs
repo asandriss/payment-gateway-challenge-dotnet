@@ -46,6 +46,19 @@ namespace PaymentGateway.Api.Tests.Services
 
         [Theory]
         [InlineData(1, true)]
+        [InlineData(int.MaxValue, true)]
+        [InlineData(0, false)]
+        [InlineData(-1, false)]
+        [InlineData(int.MinValue, false)]
+        public void TestAmountRules(int amount, bool expected)
+        {
+            var result = _validator.ValidateAmount(amount).IsSuccess;
+
+            result.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData(1, true)]
         [InlineData(11, true)]
         [InlineData(12, true)]
         [InlineData(13, false)]

@@ -1,9 +1,11 @@
-﻿namespace PaymentGateway.Api.Models.Responses;
+﻿using PaymentGateway.Abstraction.Enum;
+
+namespace PaymentGateway.Abstraction.Models;
 
 public record PostPaymentResponse
 {
     public Guid Id { get; init; }
-    
+
     public required Guid RequestId { get; init; }
     public required PaymentStatus Status { get; init; }
     public required int CardNumberLastFour { get; init; }

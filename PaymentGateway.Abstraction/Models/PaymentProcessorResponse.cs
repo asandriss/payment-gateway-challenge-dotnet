@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 using LanguageExt;
 
-namespace PaymentGateway.Abstraction
+using PaymentGateway.Abstraction.Enum;
+
+namespace PaymentGateway.Abstraction.Models
 {
     public record PaymentProcessorResponse(
-        bool Authorized,
-        Option<string> AuthorizationCode,
+        PaymentStatus Status,
+        Guid Id,
         Guid RequestId);
 }

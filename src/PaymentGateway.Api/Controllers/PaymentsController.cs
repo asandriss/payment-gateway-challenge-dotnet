@@ -1,23 +1,22 @@
-﻿using LanguageExt;
+﻿using Mapster;
 
 using Microsoft.AspNetCore.Mvc;
 
 using PaymentGateway.Abstraction;
-using PaymentGateway.Api.Models.Requests;
-using PaymentGateway.Api.Models.Responses;
-using PaymentGateway.Api.Services;
 using PaymentGateway.Api.Extensions;
-using PaymentGateway.Api.Models;
+using PaymentGateway.Api.Services;
 using PaymentGateway.Services;
+using PaymentGateway.Abstraction.Models;
+using PaymentGateway.Api.Models.Responses;
 
 namespace PaymentGateway.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class PaymentsController(PaymentsRepository paymentsRepository, IPaymentProcessor paymentProcessor) : Controller
+public class PaymentsController(IPaymentsRepository paymentsRepository, IPaymentProcessor paymentProcessor) : Controller
 {
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<PostPaymentResponse?>> GetPaymentAsync(Guid id)
+    public async Task<ActionResult<GetPaymentResponse?>> GetPaymentAsync(Guid id)
     {
         var payment = await paymentsRepository.GetAsync(id);
 
@@ -34,25 +33,37 @@ public class PaymentsController(PaymentsRepository paymentsRepository, IPaymentP
         var validationResult = cardValidator.ValidateRequest(request);
 
         if (validationResult.IsFail)
-            // ToDo: Add logging here
-            return new BadRequestObjectResult(validationResult.Head());         // here we're just returning the first error encountered
+        {
+            var allErrors = validationResult.Match(
+                Fail: err => string.Join("; ", err.AsIterable().Select(e => e.ToString())),
+                Succ: _ => string.Empty
+            );
+        
+            // ToDo: Log all errors here
+            return new BadRequestObjectResult(allErrors);
+        }
 
         var validCard = validationResult.Match(
             Succ: x => x,
             Fail: _ => throw new InvalidOperationException("this should not be reached..."));
 
-        var bankRequest = new PaymentProcessorRequest
-        (
-            RequestId: validCard.RequestId,
-            Amount: validCard.Amount,
-            CardNumber: validCard.CardNumber.ToString(),
-            Currency: validCard.Currency,
-            ExpiryDate: validCard.GetExpiryString(),
-            Cvv: validCard.Cvv.ToString()
-        );
+        var bankRequest = request.Adapt<PaymentProcessorRequest>();
+
+        var processingResult = await paymentProcessor.ProcessPayment(bankRequest);
 
 
-        var result = await paymentProcessor.ProcessPayment(bankRequest);
+        var result = new PostPaymentResponse()
+        {
+            Amount = validCard.Amount,
+            RequestId = request.RequestId,
+            CardNumberLastFour = validCard.CardNumber.GetLastFourDigits(),
+            Currency = validCard.Currency,
+            ExpiryMonth = validCard.ExpiryMonth,
+            ExpiryYear = validCard.ExpiryYear,
+            Id = Guid.NewGuid(),
+            Status = processingResult.Status
+        };
+
 
         return new OkObjectResult(result);
     }

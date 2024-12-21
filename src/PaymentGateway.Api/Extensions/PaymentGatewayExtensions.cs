@@ -1,4 +1,4 @@
-﻿using PaymentGateway.Api.Models.Requests;
+﻿using PaymentGateway.Abstraction.Models;
 
 namespace PaymentGateway.Api.Extensions
 {

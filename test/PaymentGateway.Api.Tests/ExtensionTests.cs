@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
 
 using PaymentGateway.Abstraction;
+using PaymentGateway.Abstraction.Models;
 using PaymentGateway.Api.Extensions;
-using PaymentGateway.Api.Models.Requests;
 
 namespace PaymentGateway.Api.Tests
 {

@@ -52,9 +52,7 @@ public class GetPaymentEndpointTests
     public async Task Returns404IfPaymentNotFound()
     {
         // Arrange
-        var paymentsRepository = new PaymentsRepository();
-
-        HttpClient client = PaymentsControllerTestFactory.GetWebClient(paymentsRepository);
+        HttpClient client = PaymentsControllerTestFactory.GetWebClient();
         client.DefaultRequestHeaders.Add("Authorization", "key-123456");
 
         // Act
@@ -65,7 +63,7 @@ public class GetPaymentEndpointTests
     }
 
     [Fact]
-    public async Task Returns403IfNotAuthorized()
+    public async Task Returns401IfNotAuthorized()
     {
         // Arrange
         var webApplicationFactory = new WebApplicationFactory<PaymentsController>();

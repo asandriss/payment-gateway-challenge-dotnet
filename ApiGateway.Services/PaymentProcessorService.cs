@@ -1,13 +1,11 @@
 ﻿using LanguageExt;
-using Mapster;
 using PaymentGateway.Abstraction;
 using PaymentGateway.Abstraction.Enum;
 using PaymentGateway.Abstraction.Models;
-using PaymentGateway.Api.Services;
 
 namespace PaymentGateway.Services;
 
-public class PaymentProcessorService : IPaymentProcessor
+public class PaymentProcessorService(IBank bankService) : IPaymentProcessor
 {
     public Task<Either<PaymentProcessorResponse, string>> ProcessPayment(PaymentProcessorRequest request)
     {
@@ -29,8 +27,7 @@ public class PaymentProcessorService : IPaymentProcessor
         var validCard = validationResult.Match(
             Succ: x => x,
             Fail: _ => throw new InvalidOperationException("this should not be reached..."));
-
-        var bankRequest = request.Adapt<PaymentProcessorRequest>();
+        
 
         var result = new PaymentProcessorResponse(PaymentStatus.Rejected, Guid.NewGuid(), request.RequestId);
 

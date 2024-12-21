@@ -6,7 +6,7 @@ using LanguageExt.Common;
 using PaymentGateway.Abstraction;
 using PaymentGateway.Abstraction.Models;
 
-namespace PaymentGateway.Api.Services;
+namespace PaymentGateway.Services;
 
 public class CardValidator(ICurrencyProvider currencyProvider)
 {

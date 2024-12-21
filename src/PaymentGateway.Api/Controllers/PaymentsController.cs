@@ -4,7 +4,6 @@ using PaymentGateway.Abstraction;
 using PaymentGateway.Abstraction.Models;
 using PaymentGateway.Api.Extensions;
 using PaymentGateway.Api.Models.Responses;
-using PaymentGateway.Api.Services;
 using PaymentGateway.Services;
 
 namespace PaymentGateway.Api.Controllers;

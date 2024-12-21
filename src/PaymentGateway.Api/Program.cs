@@ -1,6 +1,5 @@
 using PaymentGateway.Abstraction;
 using PaymentGateway.Api.Middleware;
-using PaymentGateway.Api.Services;
 using PaymentGateway.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +14,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IApiKeysRepository, ApiKeysRepository>();
 builder.Services.AddSingleton<ICurrencyProvider, CurrencyProvider>();
 builder.Services.AddTransient<IPaymentProcessor, PaymentProcessorService>();
+builder.Services.AddTransient<IBank, SimulatorBank>();
 builder.Services.AddSingleton<IPaymentsRepository, PaymentsRepository>();
 
 var app = builder.Build();

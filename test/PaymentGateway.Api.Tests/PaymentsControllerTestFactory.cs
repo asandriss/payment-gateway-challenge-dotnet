@@ -5,7 +5,6 @@ using Moq;
 
 using PaymentGateway.Abstraction;
 using PaymentGateway.Api.Controllers;
-using PaymentGateway.Api.Services;
 using PaymentGateway.Services;
 
 namespace PaymentGateway.Api.Tests;
@@ -24,7 +23,16 @@ public class PaymentsControllerTestFactory
                 builder.ConfigureServices(services =>
                 {
                     services.AddSingleton<IPaymentsRepository>(repo); // Add the payments repository
-                    services.AddSingleton(useRealPaymentProcessor ? new PaymentProcessorService() : paymentProcessorMock.Object); // Add the mocked payment processor
+                    services.AddSingleton<IBank, SimulatorBank>();
+
+                    if (useRealPaymentProcessor)
+                    {
+                        services.AddSingleton<IPaymentProcessor, PaymentProcessorService>();
+                    }
+                    else
+                    {
+                        services.AddSingleton(paymentProcessorMock.Object);
+                    }
                 }))
             .CreateClient();
         return client;

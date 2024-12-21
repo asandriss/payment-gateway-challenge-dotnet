@@ -2,7 +2,6 @@
 
 using FluentAssertions;
 
-using PaymentGateway.Api.Services;
 using PaymentGateway.Services;
 
 namespace PaymentGateway.Api.Tests.Services;

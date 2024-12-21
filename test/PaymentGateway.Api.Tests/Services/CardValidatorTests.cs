@@ -3,12 +3,13 @@
 using FluentAssertions;
 
 using PaymentGateway.Api.Services;
+using PaymentGateway.Services;
 
 namespace PaymentGateway.Api.Tests.Services
 {
     public class CardValidatorTests
     {
-        private readonly CardValidator _validator = new CardValidator(new List<string> { "GBP", "USD", "EUR" });
+        private readonly CardValidator _validator = new CardValidator(new CurrencyProvider());
 
         [Theory]
         [InlineData(2222405343248877, true)]

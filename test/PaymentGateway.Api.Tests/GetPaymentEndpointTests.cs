@@ -84,12 +84,12 @@ public class GetPaymentEndpointTests
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
-    private static HttpClient GetWebClient(PaymentsRepository paymentsRepository)
+        private static HttpClient GetWebClient(PaymentsRepository paymentsRepository)
     {
         var webApplicationFactory = new WebApplicationFactory<PaymentsController>();
         //var client = webApplicationFactory.CreateClient();
         var paymentProcessorMock = new Mock<IPaymentProcessor>();
-
+        
 
         var client = webApplicationFactory.WithWebHostBuilder(builder =>
                 builder.ConfigureServices(services =>

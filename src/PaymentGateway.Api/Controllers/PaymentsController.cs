@@ -8,6 +8,7 @@ using PaymentGateway.Api.Models.Responses;
 using PaymentGateway.Api.Services;
 using PaymentGateway.Api.Extensions;
 using PaymentGateway.Api.Models;
+using PaymentGateway.Services;
 
 namespace PaymentGateway.Api.Controllers;
 
@@ -28,7 +29,7 @@ public class PaymentsController(PaymentsRepository paymentsRepository, IPaymentP
     [HttpPost]
     public async Task<ActionResult<PostPaymentResponse>> ProcessPaymentAsync([FromBody] PostPaymentRequest request)
     {
-        var cardValidator = new CardValidator(new List<string>() { "GBP", "USD", "EUR" });
+        var cardValidator = new CardValidator(new CurrencyProvider());
 
         var validationResult = cardValidator.ValidateRequest(request);
 

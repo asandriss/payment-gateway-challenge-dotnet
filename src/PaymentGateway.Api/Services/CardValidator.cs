@@ -1,11 +1,13 @@
 ﻿using BuildingBlocks;
 using LanguageExt;
 using LanguageExt.Common;
+
+using PaymentGateway.Abstraction;
 using PaymentGateway.Api.Models.Requests;
 
 namespace PaymentGateway.Api.Services
 {
-    public class CardValidator(IList<string> supportedCurrencies)
+    public class CardValidator(ICurrencyProvider currencyProvider)
     {
         public Validation<Error, PostPaymentRequest> ValidateRequest(PostPaymentRequest request)
         {
@@ -58,7 +60,7 @@ namespace PaymentGateway.Api.Services
             if (string.IsNullOrWhiteSpace(currency) || currency.Length != 3)
                 return Fail<string>("Currency must be three characters long.");
 
-            return !supportedCurrencies.Contains(currency.ToUpper()) 
+            return !currencyProvider.GetSupportedCurrencies().Contains(currency.ToUpper())          // the supported currencies provider could handle currency-specific validations here.
                 ? Fail<string>($"Unsupported currency {currency}")
                 : Success(currency);
         }

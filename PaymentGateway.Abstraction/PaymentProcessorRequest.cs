@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace PaymentGateway.Abstraction
 {
     public record PaymentProcessorRequest(
+        Guid RequestId,
         string CardNumber,
         string ExpiryDate,
         string Currency,

@@ -43,12 +43,14 @@ public class PaymentsController(PaymentsRepository paymentsRepository, IPaymentP
 
         var bankRequest = new PaymentProcessorRequest
         (
+            RequestId: validCard.RequestId,
             Amount: validCard.Amount,
             CardNumber: validCard.CardNumber.ToString(),
             Currency: validCard.Currency,
             ExpiryDate: validCard.GetExpiryString(),
             Cvv: validCard.Cvv.ToString()
         );
+
 
         var result = await paymentProcessor.ProcessPayment(bankRequest);
 

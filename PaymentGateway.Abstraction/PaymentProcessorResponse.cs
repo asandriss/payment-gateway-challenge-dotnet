@@ -8,5 +8,8 @@ using LanguageExt;
 
 namespace PaymentGateway.Abstraction
 {
-    public record PaymentProcessorResponse(bool Authorized, Option<string> AuthorizationCode);
+    public record PaymentProcessorResponse(
+        bool Authorized,
+        Option<string> AuthorizationCode,
+        Guid RequestId);
 }

@@ -23,7 +23,6 @@ public class PaymentsController(PaymentsRepository paymentsRepository, IPaymentP
         return payment.Match<ActionResult>(
             Some: p => new OkObjectResult(p),
             None: () => new NotFoundObjectResult(id));
-
     }
 
     [HttpPost]

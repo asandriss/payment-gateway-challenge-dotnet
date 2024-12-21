@@ -35,8 +35,7 @@ namespace PaymentGateway.Api.Tests
             cardNum.GetLastFourDigits().Should().Be(expected);
         }
 
-        [Theory]
-        [MemberData(nameof(GetTestPaymentRequest))]
+        [Theory, MemberData(nameof(GetTestPaymentRequest))]
         public void GetExpiryString_MergesMonthAndYearCorrectly(PostPaymentRequest input, string expected)
         {
             input.GetExpiryString().Should().Be(expected);

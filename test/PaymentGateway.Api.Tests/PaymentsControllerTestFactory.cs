@@ -12,7 +12,7 @@ namespace PaymentGateway.Api.Tests
 {
     public class PaymentsControllerTestFactory
     {
-        public static HttpClient GetWebClient(PaymentsRepository paymentsRepository = null)
+        public static HttpClient GetWebClient(PaymentsRepository paymentsRepository = null, bool useRealPaymentProcessor = false)
         {
             var repo = paymentsRepository ?? new PaymentsRepository();
             var webApplicationFactory = new WebApplicationFactory<PaymentsController>();
@@ -24,7 +24,7 @@ namespace PaymentGateway.Api.Tests
                     builder.ConfigureServices(services =>
                     {
                         services.AddSingleton<IPaymentsRepository>(repo); // Add the payments repository
-                        services.AddSingleton(paymentProcessorMock.Object); // Add the mocked payment processor
+                        services.AddSingleton(useRealPaymentProcessor ? new PaymentProcessorService() : paymentProcessorMock.Object); // Add the mocked payment processor
                     }))
                 .CreateClient();
             return client;

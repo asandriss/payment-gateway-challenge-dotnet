@@ -24,7 +24,7 @@ namespace PaymentGateway.Api.Services
         {
             return amount > 0
                 ? Success(amount)
-                : Fail<int>($"Amount must be greater than zero");
+                : Fail<int>($"Amount must be greater than zero. Was: [{amount}]");
         }
 
         public Validation<Error, int> ValidateCvv(int cvv)
@@ -81,7 +81,7 @@ namespace PaymentGateway.Api.Services
 
             var card = cardNumber.ToString();
             if (card.Length is < 14 or > 19)
-                return Fail<long>($"Incorrect card length of [{card.Length}]");
+                return Fail<long>($"Credit card number must be between 14 and 19 characters long. Was: [{card.Length}] characters long");
 
             return IsValidLuhn(cardNumber)
                 ? Success(cardNumber)

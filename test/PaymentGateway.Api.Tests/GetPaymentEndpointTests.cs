@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 
 using PaymentGateway.Api.Controllers;
+using PaymentGateway.Api.Models;
 using PaymentGateway.Api.Models.Responses;
 using PaymentGateway.Api.Services;
 
@@ -23,12 +24,14 @@ public class PaymentsControllerTests
         // Arrange
         var payment = new PostPaymentResponse
         {
+            RequestId = Guid.NewGuid(),
             Id = Guid.NewGuid(),
             ExpiryYear = _random.Next(2025, 2030),
             ExpiryMonth = _random.Next(1, 12),
             Amount = _random.Next(1, 10000),
             CardNumberLastFour = _random.Next(1111, 9999),
-            Currency = "GBP"
+            Currency = "GBP",
+            Status = PaymentStatus.Authorized
         };
 
         var paymentsRepository = new PaymentsRepository();

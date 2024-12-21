@@ -71,11 +71,14 @@ namespace PaymentGateway.Api.Tests.Services
         {
             SystemDateTime.ForceDateTimeProvider(() => new DateTime(2024, 11, 30, 12, 0, 0 ));
 
-            _validator.ValidateExpirationDate(11, 2024).IsSuccess.Should().BeTrue();
+            _validator.ValidateExpirationDate(11, 2024).IsSuccess.Should().BeTrue();        // debatable - we need to clarify requirements "should be in the future". If it's in the current month should still be valid.
             _validator.ValidateExpirationDate(12, 2024).IsSuccess.Should().BeTrue();
             _validator.ValidateExpirationDate(1, 2025).IsSuccess.Should().BeTrue();
             _validator.ValidateExpirationDate(10, 2025).IsSuccess.Should().BeTrue();
+            _validator.ValidateExpirationDate(7, 2050).IsSuccess.Should().BeTrue();         // not sure if there should be a max expiry duration?
 
+            _validator.ValidateExpirationDate(0, 2024).IsSuccess.Should().BeFalse();
+            _validator.ValidateExpirationDate(10, 0).IsSuccess.Should().BeFalse();
             _validator.ValidateExpirationDate(10, 2024).IsSuccess.Should().BeFalse();
             _validator.ValidateExpirationDate(11, 2023).IsSuccess.Should().BeFalse();
             _validator.ValidateExpirationDate(12, 2023).IsSuccess.Should().BeFalse();
@@ -88,7 +91,6 @@ namespace PaymentGateway.Api.Tests.Services
         [InlineData("EUR", true)]
         [InlineData("GBP", true)]
         [InlineData("gbp", true)]
-
         [InlineData("GP", false)]
         [InlineData("$", false)]
         [InlineData("1223", false)]

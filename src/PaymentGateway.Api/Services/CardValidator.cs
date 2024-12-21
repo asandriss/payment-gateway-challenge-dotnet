@@ -1,13 +1,7 @@
-﻿using System.Reflection.Metadata.Ecma335;
-
-using BuildingBlocks;
-
+﻿using BuildingBlocks;
 using LanguageExt;
 using LanguageExt.Common;
-
 using PaymentGateway.Api.Models.Requests;
-
-using NotImplementedException = System.NotImplementedException;
 
 namespace PaymentGateway.Api.Services
 {
@@ -32,6 +26,7 @@ namespace PaymentGateway.Api.Services
 
         public Validation<Error, (int, int)> ValidateExpirationDate(int month, int year)
         {
+            // Ensure Month and year validations are taken into account first
             return ValidateExpirationMonth(month)
                 .Bind(_ => ValidateExpirationYear(year))
                 .Bind(_ =>
@@ -114,6 +109,5 @@ namespace PaymentGateway.Api.Services
 
         private static Validation<Error, T> Success<T>(T input)
             => Validation<Error, T>.Success(input);
-
     }
 }

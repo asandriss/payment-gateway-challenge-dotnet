@@ -1,4 +1,6 @@
-﻿using PaymentGateway.Api.Models.Responses;
+﻿using LanguageExt;
+
+using PaymentGateway.Api.Models.Responses;
 
 namespace PaymentGateway.Api.Services;
 
@@ -11,8 +13,12 @@ public class PaymentsRepository
         Payments.Add(payment);
     }
 
-    public PostPaymentResponse Get(Guid id)
+    public async Task<Option<PostPaymentResponse>> GetAsync(Guid id)
     {
-        return Payments.FirstOrDefault(p => p.Id == id);
+        var payment = Payments.FirstOrDefault(p => p.Id == id);
+        var result = payment 
+                     ?? Option<PostPaymentResponse>.None;
+
+        return await Task.FromResult(result);
     }
 }

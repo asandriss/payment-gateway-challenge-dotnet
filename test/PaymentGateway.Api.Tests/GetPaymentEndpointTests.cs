@@ -1,12 +1,10 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
-using Microsoft.AspNetCore.Mvc.Testing;
-
 using FluentAssertions;
-
-using PaymentGateway.Api.Controllers;
+using Microsoft.AspNetCore.Mvc.Testing;
 using PaymentGateway.Abstraction.Enum;
 using PaymentGateway.Abstraction.Models;
+using PaymentGateway.Api.Controllers;
 using PaymentGateway.Api.Models.Responses;
 using PaymentGateway.Services;
 

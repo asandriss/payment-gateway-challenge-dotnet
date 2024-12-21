@@ -10,7 +10,7 @@ namespace PaymentGateway.Api.Services
 {
     public class CardValidator(ICurrencyProvider currencyProvider)
     {
-        public Validation<Error, PostPaymentRequest> ValidateRequest(PostPaymentRequest request)
+        public Validation<Error, PaymentProcessorRequest> ValidateRequest(PaymentProcessorRequest request)
         {
             return ValidateCardNumber(request.CardNumber)
                 .Bind(_ => ValidateAmount(request.Amount))

@@ -1,6 +1,6 @@
 ﻿using LanguageExt;
-using PaymentGateway.Abstraction.Models;
 using PaymentGateway.Abstraction;
+using PaymentGateway.Abstraction.Models;
 
 namespace PaymentGateway.Services
 {

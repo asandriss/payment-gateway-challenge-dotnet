@@ -1,13 +1,11 @@
 ﻿using Mapster;
-
 using Microsoft.AspNetCore.Mvc;
-
 using PaymentGateway.Abstraction;
+using PaymentGateway.Abstraction.Models;
 using PaymentGateway.Api.Extensions;
+using PaymentGateway.Api.Models.Responses;
 using PaymentGateway.Api.Services;
 using PaymentGateway.Services;
-using PaymentGateway.Abstraction.Models;
-using PaymentGateway.Api.Models.Responses;
 
 namespace PaymentGateway.Api.Controllers;
 
@@ -28,43 +26,24 @@ public class PaymentsController(IPaymentsRepository paymentsRepository, IPayment
     [HttpPost]
     public async Task<ActionResult<PostPaymentResponse>> ProcessPaymentAsync([FromBody] PostPaymentRequest request)
     {
-        var cardValidator = new CardValidator(new CurrencyProvider());
+        var processingResult = await paymentProcessor.ProcessPayment(request.Adapt<PaymentProcessorRequest>());
 
-        var validationResult = cardValidator.ValidateRequest(request);
-
-        if (validationResult.IsFail)
-        {
-            var allErrors = validationResult.Match(
-                Fail: err => string.Join("; ", err.AsIterable().Select(e => e.ToString())),
-                Succ: _ => string.Empty
+        var result = processingResult.Match<ActionResult>(
+            response => new OkObjectResult( new PostPaymentResponse
+                {
+                    RequestId = response.RequestId,
+                    Id = response.Id,
+                    Status = response.Status,
+                    Amount = request.Amount,
+                    ExpiryMonth = request.ExpiryMonth,
+                    ExpiryYear = request.ExpiryYear,
+                    CardNumberLastFour = request.CardNumber.GetLastFourDigits(),
+                    Currency = request.Currency
+                    
+                }),
+            err => new BadRequestObjectResult(err)
             );
-        
-            // ToDo: Log all errors here
-            return new BadRequestObjectResult(allErrors);
-        }
 
-        var validCard = validationResult.Match(
-            Succ: x => x,
-            Fail: _ => throw new InvalidOperationException("this should not be reached..."));
-
-        var bankRequest = request.Adapt<PaymentProcessorRequest>();
-
-        var processingResult = await paymentProcessor.ProcessPayment(bankRequest);
-
-
-        var result = new PostPaymentResponse()
-        {
-            Amount = validCard.Amount,
-            RequestId = request.RequestId,
-            CardNumberLastFour = validCard.CardNumber.GetLastFourDigits(),
-            Currency = validCard.Currency,
-            ExpiryMonth = validCard.ExpiryMonth,
-            ExpiryYear = validCard.ExpiryYear,
-            Id = Guid.NewGuid(),
-            Status = processingResult.Status
-        };
-
-
-        return new OkObjectResult(result);
+        return result;
     }
 }

@@ -1,9 +1,12 @@
-﻿using PaymentGateway.Abstraction.Models;
+﻿using LanguageExt;
+
+using PaymentGateway.Abstraction.Models;
 
 namespace PaymentGateway.Abstraction
 {
     public interface IPaymentProcessor
     {
-        Task<PaymentProcessorResponse> ProcessPayment(PaymentProcessorRequest request);
+        // Instead of Either, I would create a Result<> wrapper that would make it more readable
+        Task<Either<PaymentProcessorResponse, string>> ProcessPayment(PaymentProcessorRequest request);
     }
 }

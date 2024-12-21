@@ -1,9 +1,8 @@
 ﻿using LanguageExt;
 
-namespace PaymentGateway.Abstraction
+namespace PaymentGateway.Abstraction;
+
+public interface IApiKeysRepository
 {
-    public interface IApiKeysRepository
-    {
-        Option<string> GetMerchantId(string apiKey);
-    }
+    Option<string> GetMerchantId(string apiKey);
 }

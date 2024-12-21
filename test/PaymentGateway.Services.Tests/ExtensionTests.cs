@@ -1,6 +1,3 @@
 ﻿using FluentAssertions;
 
-namespace PaymentGateway.Services.Tests
-{
-    
-}
+namespace PaymentGateway.Services.Tests;

@@ -1,7 +1,6 @@
-﻿namespace PaymentGateway.Abstraction
+﻿namespace PaymentGateway.Abstraction;
+
+public interface ICurrencyProvider
 {
-    public interface ICurrencyProvider
-    {
-        IList<string> GetSupportedCurrencies();
-    }
+    IList<string> GetSupportedCurrencies();
 }

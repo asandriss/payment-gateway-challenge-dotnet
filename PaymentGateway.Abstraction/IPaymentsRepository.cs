@@ -2,12 +2,11 @@
 
 using PaymentGateway.Abstraction.Models;
 
-namespace PaymentGateway.Abstraction
+namespace PaymentGateway.Abstraction;
+
+public interface IPaymentsRepository
 {
-    public interface IPaymentsRepository
-    {
-        void Add(PostPaymentResponse payment);
+    void Add(PostPaymentResponse payment);
         
-        Task<Option<PostPaymentResponse>> GetAsync(Guid id);
-    }
+    Task<Option<PostPaymentResponse>> GetAsync(Guid id);
 }

@@ -8,26 +8,25 @@ using PaymentGateway.Api.Controllers;
 using PaymentGateway.Api.Services;
 using PaymentGateway.Services;
 
-namespace PaymentGateway.Api.Tests
+namespace PaymentGateway.Api.Tests;
+
+public class PaymentsControllerTestFactory
 {
-    public class PaymentsControllerTestFactory
+    public static HttpClient GetWebClient(PaymentsRepository paymentsRepository = null, bool useRealPaymentProcessor = false)
     {
-        public static HttpClient GetWebClient(PaymentsRepository paymentsRepository = null, bool useRealPaymentProcessor = false)
-        {
-            var repo = paymentsRepository ?? new PaymentsRepository();
-            var webApplicationFactory = new WebApplicationFactory<PaymentsController>();
-            //var client = webApplicationFactory.CreateClient();
-            var paymentProcessorMock = new Mock<IPaymentProcessor>();
+        var repo = paymentsRepository ?? new PaymentsRepository();
+        var webApplicationFactory = new WebApplicationFactory<PaymentsController>();
+        //var client = webApplicationFactory.CreateClient();
+        var paymentProcessorMock = new Mock<IPaymentProcessor>();
 
 
-            var client = webApplicationFactory.WithWebHostBuilder(builder =>
-                    builder.ConfigureServices(services =>
-                    {
-                        services.AddSingleton<IPaymentsRepository>(repo); // Add the payments repository
-                        services.AddSingleton(useRealPaymentProcessor ? new PaymentProcessorService() : paymentProcessorMock.Object); // Add the mocked payment processor
-                    }))
-                .CreateClient();
-            return client;
-        }
+        var client = webApplicationFactory.WithWebHostBuilder(builder =>
+                builder.ConfigureServices(services =>
+                {
+                    services.AddSingleton<IPaymentsRepository>(repo); // Add the payments repository
+                    services.AddSingleton(useRealPaymentProcessor ? new PaymentProcessorService() : paymentProcessorMock.Object); // Add the mocked payment processor
+                }))
+            .CreateClient();
+        return client;
     }
 }

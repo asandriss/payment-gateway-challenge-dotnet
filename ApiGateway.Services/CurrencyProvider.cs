@@ -1,12 +1,11 @@
 ﻿using PaymentGateway.Abstraction;
 
-namespace PaymentGateway.Services
+namespace PaymentGateway.Services;
+
+public class CurrencyProvider : ICurrencyProvider
 {
-    public class CurrencyProvider : ICurrencyProvider
+    public IList<string> GetSupportedCurrencies()
     {
-        public IList<string> GetSupportedCurrencies()
-        {
-            return new List<string>() { "GBP", "USD", "EUR" };
-        }
+        return new List<string>() { "GBP", "USD", "EUR" };
     }
 }

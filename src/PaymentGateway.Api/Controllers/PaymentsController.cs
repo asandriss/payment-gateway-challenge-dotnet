@@ -13,7 +13,7 @@ namespace PaymentGateway.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class PaymentsController(PaymentsRepository paymentsRepository) : Controller
+public class PaymentsController(PaymentsRepository paymentsRepository, IPaymentProcessor paymentProcessor) : Controller
 {
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<PostPaymentResponse?>> GetPaymentAsync(Guid id)
@@ -50,9 +50,8 @@ public class PaymentsController(PaymentsRepository paymentsRepository) : Control
             Cvv: validCard.Cvv.ToString()
         );
 
-        throw new NotImplementedException();
-        //var processingResult = paymentProcessor.ProcessPayment(bankRequest);
+        var result = await paymentProcessor.ProcessPayment(bankRequest);
 
-        //return new OkObjectResult(processingResult);
+        return new OkObjectResult(result);
     }
 }

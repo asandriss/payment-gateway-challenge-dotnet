@@ -17,7 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ApiGateway.Services\PaymentGateway.Services.csproj" />
+    <ProjectReference Include="..\..\ApiGateway.Services\PaymentGateway.Services.csproj" />
+    <ProjectReference Include="..\..\PaymentGateway.Abstraction\PaymentGateway.Abstraction.csproj" />
   </ItemGroup>
 
   <ItemGroup>

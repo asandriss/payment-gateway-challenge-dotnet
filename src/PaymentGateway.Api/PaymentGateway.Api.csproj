@@ -17,4 +17,8 @@
     <ProjectReference Include="..\..\PaymentGateway.Abstraction\PaymentGateway.Abstraction.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
+
 </Project>

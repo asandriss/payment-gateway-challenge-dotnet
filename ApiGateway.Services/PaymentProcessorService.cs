@@ -17,17 +17,13 @@ public class PaymentProcessorService(IBank bankService) : IPaymentProcessor
         {
             var allErrors = validationResult.Match(
                 Fail: err => err.AsIterable().Select(e => e.ToString()).ToArray(),
-                Succ: _ => Array.Empty<string>()
+                Succ: _ => []
             );
 
             // ToDo: Log all errors here
+            // ToDo: Write the failed request into DB
             return Task.FromResult<Either<PaymentProcessorResponse, string>>(string.Join("; ", allErrors));
         }
-
-        var validCard = validationResult.Match(
-            Succ: x => x,
-            Fail: _ => throw new InvalidOperationException("this should not be reached..."));
-        
 
         var result = new PaymentProcessorResponse(PaymentStatus.Rejected, Guid.NewGuid(), request.RequestId);
 

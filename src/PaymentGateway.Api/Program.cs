@@ -17,6 +17,7 @@ builder.Services.AddSingleton<IPaymentsRepository, PaymentsRepository>();
 
 builder.Services.AddTransient<IPaymentProcessor, PaymentProcessorService>();
 builder.Services.AddTransient<IBank, SimulatorBank>();
+builder.Services.AddHttpClient<SimulatorBank>();
 
 var app = builder.Build();
 

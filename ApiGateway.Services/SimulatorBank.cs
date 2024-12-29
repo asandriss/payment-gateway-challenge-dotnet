@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using LanguageExt.Traits.Domain;
 
 using PaymentGateway.Abstraction;
+using PaymentGateway.Abstraction.Models;
 
 namespace PaymentGateway.Services
 {

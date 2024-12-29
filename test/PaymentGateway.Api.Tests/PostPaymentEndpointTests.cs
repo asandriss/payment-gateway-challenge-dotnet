@@ -49,7 +49,8 @@ public class PostPaymentEndpointTests
 
         // Act
         var response = await client.PostAsync($"/api/Payments/", content);
-        var paymentResponse = await response.Content.ReadFromJsonAsync<GetPaymentResponse>();
+        var responseContent = await response.Content.ReadAsStringAsync();
+        var paymentResponse = JsonConvert.DeserializeObject<GetPaymentResponse>(responseContent);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);

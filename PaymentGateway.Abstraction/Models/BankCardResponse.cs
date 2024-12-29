@@ -1,5 +1,3 @@
-﻿using LanguageExt;
+﻿namespace PaymentGateway.Abstraction.Models;
 
-namespace PaymentGateway.Abstraction;
-
-public record BankCardResponse(bool Authorized, Option<string> AuthorizationCode);
+public record BankCardResponse(bool Authorized, string AuthorizationCode);

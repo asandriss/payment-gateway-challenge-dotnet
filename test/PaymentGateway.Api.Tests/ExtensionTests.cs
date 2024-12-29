@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using BuildingBlocks;
+
+using FluentAssertions;
 
 using PaymentGateway.Abstraction;
 using PaymentGateway.Abstraction.Models;

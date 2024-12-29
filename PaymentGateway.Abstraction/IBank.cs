@@ -1,4 +1,6 @@
-﻿namespace PaymentGateway.Abstraction;
+﻿using PaymentGateway.Abstraction.Models;
+
+namespace PaymentGateway.Abstraction;
 
 public interface IBank
 {

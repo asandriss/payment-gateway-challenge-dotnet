@@ -1,23 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-
-using System.Linq;
-using System.Net;
-using System.Net.Http.Json;
+﻿using System.Net;
 using System.Text;
-using System.Threading.Tasks;
-
 using BuildingBlocks;
-
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
-
-using PaymentGateway.Abstraction.Enum;
 using PaymentGateway.Abstraction.Models;
-using PaymentGateway.Api.Controllers;
 using PaymentGateway.Api.Models.Responses;
-using PaymentGateway.Services;
 
 namespace PaymentGateway.Api.Tests;
 

@@ -1,13 +1,14 @@
 using PaymentGateway.Abstraction;
 using PaymentGateway.Api.Middleware;
 using PaymentGateway.Services;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -18,6 +19,13 @@ builder.Services.AddSingleton<IPaymentsRepository, PaymentsRepository>();
 builder.Services.AddTransient<IPaymentProcessor, PaymentProcessorService>();
 builder.Services.AddTransient<IBank, SimulatorBank>();
 builder.Services.AddHttpClient<SimulatorBank>();
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.File("logs/app-.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 var app = builder.Build();
 

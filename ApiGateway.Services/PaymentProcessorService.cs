@@ -1,8 +1,8 @@
 ﻿using BuildingBlocks;
-
 using LanguageExt;
-
 using Mapster;
+
+using Microsoft.Extensions.Logging;
 
 using PaymentGateway.Abstraction;
 using PaymentGateway.Abstraction.Enum;
@@ -14,20 +14,25 @@ public class PaymentProcessorService : IPaymentProcessor
 {
     private readonly IBank _bankService;
     private readonly IPaymentsRepository _paymentDb;
+    private readonly ILogger<PaymentProcessorService> _logger;
 
-    public PaymentProcessorService(IBank bankService, IPaymentsRepository paymentDb)
+    public PaymentProcessorService(IBank bankService, IPaymentsRepository paymentDb, ILogger<PaymentProcessorService> logger)
     {
         _bankService = bankService;
         _paymentDb = paymentDb;
+        _logger = logger;
         
         ConfigureMappings();
     }
     
     public async Task<Either<PaymentProcessorResponse, string>> ProcessPayment(PaymentProcessorRequest request)
     {
+        _logger.LogInformation("PaymentProcessorService received a request: {request}", request);
+
         var cardValidator = new CardValidator(new CurrencyProvider());
 
         var validationResult = cardValidator.ValidateRequest(request);
+        _logger.LogInformation("PaymentProcessorService completed validation with: {validationResult}", validationResult);
 
         if (validationResult.IsFail)
         {
@@ -36,24 +41,30 @@ public class PaymentProcessorService : IPaymentProcessor
                 Succ: _ => []
             );
 
-            // ToDo: Log all errors here
+            // This SHOULD NOT BE a warning. I made it so to stand out, should update it back to information.
+            _logger.LogWarning("Validation failed for request {id}. The following errors were found: {allErrors}", request.RequestId, allErrors);
             // ToDo: Write the failed request into DB
             return string.Join("; ", allErrors);
         }
         
         var bankRequest = request.Adapt<BankCardRequest>();
+        _logger.LogInformation("PaymentProcessorService is ready to call the bank service with request: {bankRequest}", bankRequest);
         var bankResponse = await _bankService.ProcessCreditCardPayment(bankRequest);
 
+
+        _logger.LogInformation("PaymentProcessorService is ready to write data to the database: {bankResponse}", bankResponse);
         WriteResultsToTheDb(bankResponse, request, _paymentDb);
 
-        var result = new PaymentProcessorResponse(PaymentStatus.Rejected, Guid.NewGuid(), request.RequestId);
+        var result = new PaymentProcessorResponse(bankResponse.Authorized ? PaymentStatus.Authorized : PaymentStatus.Declined,  Guid.Parse(bankResponse.AuthorizationCode), request.RequestId);
 
+        _logger.LogInformation("PaymentProcessorService has completed with result {result}", result);
         return result;
     }
 
     private void WriteResultsToTheDb(BankCardResponse bankResponse, PaymentProcessorRequest request,
         IPaymentsRepository paymentsRepository)
     {
+        _logger.LogInformation("PaymentProcessorService writing data to the database: {request}, {bankResponse}", request, bankResponse);
         var payment = new PostPaymentResponse
         {
             Amount = request.Amount,

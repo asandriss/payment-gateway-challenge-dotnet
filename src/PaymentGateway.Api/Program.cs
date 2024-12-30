@@ -1,4 +1,5 @@
 using PaymentGateway.Abstraction;
+using PaymentGateway.Api.Extensions;
 using PaymentGateway.Api.Middleware;
 using PaymentGateway.Services;
 using Serilog;
@@ -17,16 +18,10 @@ builder.Services.AddSingleton<IApiKeysRepository, ApiKeysRepository>();
 builder.Services.AddSingleton<ICurrencyProvider, CurrencyProvider>();
 builder.Services.AddSingleton<IPaymentsRepository, PaymentsRepository>();
 
-builder.Services.AddSingleton<IPaymentProcessor, PaymentProcessorService>();
-builder.Services.AddSingleton<IBank, SimulatorBank>();
+builder.Services.AddTransient<IPaymentProcessor, PaymentProcessorService>();
+builder.Services.AddTransient<IBank, SimulatorBank>();
 
-
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
-    .WriteTo.File("logs/app-.txt", rollingInterval: RollingInterval.Day)
-    .CreateLogger();
-
-builder.Host.UseSerilog();
+MapsterConfig.ConfigureMappings();
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
@@ -34,6 +29,7 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 builder.Host.UseSerilog();
+
 
 var app = builder.Build();
 

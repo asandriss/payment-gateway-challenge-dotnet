@@ -50,7 +50,7 @@ public class PaymentProcessorService : IPaymentProcessor
         var bankRequest = request.Adapt<BankCardRequest>();
         _logger.LogInformation("PaymentProcessorService is ready to call the bank service with request: {bankRequest}", bankRequest);
         var bankResponse = await _bankService.ProcessCreditCardPayment(bankRequest);
-        
+
         _logger.LogInformation("PaymentProcessorService is ready to write data to the database: {bankResponse}", bankResponse);
         WriteResultsToTheDb(bankResponse, request, _paymentDb);
 

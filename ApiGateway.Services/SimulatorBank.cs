@@ -7,29 +7,12 @@ using Microsoft.Extensions.Logging;
 
 namespace PaymentGateway.Services
 {
-    public class SimulatorBank : IBank
+    public class SimulatorBank(HttpClient client, ILogger<SimulatorBank> logger) : IBank
     {
-        private readonly HttpClient _client;
-        private readonly ILogger<SimulatorBank> _logger;
-        private static TaskCompletionSource<bool> _tcs = new TaskCompletionSource<bool>();
-
-        public SimulatorBank(HttpClient client, ILogger<SimulatorBank> logger)
-        {
-            var handler = new HttpClientHandler() { AllowAutoRedirect = false };
-            _client = new HttpClient(handler)
-            {
-                Timeout = TimeSpan.FromSeconds(100),
-            };
-
-            _logger = logger;
-        }
-
         public async Task<BankCardResponse> ProcessCreditCardPayment(BankCardRequest request)
         {
-            _tcs.TrySetResult(false);
-            _logger.LogInformation("ProcessCreditCardPayment start with {request}", request);
+            logger.LogInformation("ProcessCreditCardPayment start with {request}", request);
             const string url = "http://localhost:8080/payments";        // this should go out to config
-
             try
             {
                 var jsonRequest = JsonSerializer.Serialize(new
@@ -44,21 +27,20 @@ namespace PaymentGateway.Services
 
                 var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-                _logger.LogInformation("Send request to the bank simulator");
-                var httpResponse = await _client.PostAsync(url, content);
+                logger.LogInformation("Send request to the bank simulator");
+                var httpResponse = await client.PostAsync(url, content);
                 httpResponse.EnsureSuccessStatusCode();
-                _logger.LogInformation("Bank simulator returned success status code");
+                logger.LogInformation("Bank simulator returned success status code");
 
-                var jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                _tcs.TrySetResult(true);
+                var jsonResponse = await httpResponse.Content.ReadAsStringAsync();
                 var bankResponse = JsonSerializer.Deserialize<BankCardResponse>(jsonResponse);
 
-                _logger.LogInformation("Bank returned the response {bankResponse}", bankResponse);
+                logger.LogInformation("Bank returned the response {bankResponse}", bankResponse);
                 return bankResponse ?? throw new Exception("Failed to deserialize bank response");
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error occured while calling bank simulator {ex}", ex);
+                logger.LogError("Error occured while calling bank simulator {ex}", ex);
                 throw;
             }
         }

@@ -10,7 +10,6 @@ public class ApiKeyValidationMiddleware(RequestDelegate next, IApiKeysRepository
 
     public async Task InvokeAsync(HttpContext context)
     {
-
         if (!context.Request.Headers.TryGetValue(ApiKeyHeaderName, out var extractedApiKey)
             || extractedApiKey.Count != 1
             || string.IsNullOrWhiteSpace(extractedApiKey[0]))
@@ -22,17 +21,19 @@ public class ApiKeyValidationMiddleware(RequestDelegate next, IApiKeysRepository
 
         var apiKey = extractedApiKey[0]!;
 
-        _ = apiKeys.GetMerchantId(apiKey).Match(
-            merchantId =>
+        var merchantResult = apiKeys.GetMerchantId(apiKey);
+
+        await merchantResult.Match(
+            async merchantId =>
             {
                 context.Items["MerchantId"] = merchantId;
-                next(context);
+                await next(context);
             },
-            () =>
+            async () =>
             {
                 context.Response.StatusCode = 401;
-                context.Response.WriteAsync("Unauthorized merchant.");
-                return;
+                await context.Response.WriteAsync("Unauthorized merchant.");
             });
     }
+
 }

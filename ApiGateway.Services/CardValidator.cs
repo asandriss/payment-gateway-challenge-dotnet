@@ -1,5 +1,4 @@
 ﻿using BuildingBlocks;
-
 using LanguageExt;
 using LanguageExt.Common;
 using PaymentGateway.Abstraction;

@@ -1,3 +1,7 @@
-﻿namespace PaymentGateway.Abstraction.Models;
+﻿using System.Text.Json.Serialization;
 
-public record BankCardResponse(bool Authorized, string AuthorizationCode);
+namespace PaymentGateway.Abstraction.Models;
+
+public record BankCardResponse(
+    [property: JsonPropertyName("authorized")] bool Authorized,
+    [property: JsonPropertyName("authorization_code")] string AuthorizationCode);

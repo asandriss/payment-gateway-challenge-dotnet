@@ -1,23 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-
-using System.Linq;
-using System.Net;
-using System.Net.Http.Json;
+﻿using System.Net;
 using System.Text;
-using System.Threading.Tasks;
-
 using BuildingBlocks;
-
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
-
-using PaymentGateway.Abstraction.Enum;
 using PaymentGateway.Abstraction.Models;
-using PaymentGateway.Api.Controllers;
 using PaymentGateway.Api.Models.Responses;
-using PaymentGateway.Services;
 
 namespace PaymentGateway.Api.Tests;
 
@@ -38,8 +25,6 @@ public class PostPaymentEndpointTests
     }
 
     [Fact]
-    // Ideally, this test and similar one in the GET section should be separated into different projects
-    //  these tests should not be part of every test flow, just run on demand, in a docker container (configure the bank simulator next to it)
     public async Task CompletesASuccessfulPayment_INTEGRATION_RequiresBankSimulator()
     {
         // Arrange
@@ -49,7 +34,7 @@ public class PostPaymentEndpointTests
 
         // Act
         var response = await client.PostAsync($"/api/Payments/", content);
-        var responseContent = await response.Content.ReadAsStringAsync();
+        var responseContent = response.Content.ReadAsStringAsync().Result;
         var paymentResponse = JsonConvert.DeserializeObject<GetPaymentResponse>(responseContent);
 
         // Assert

@@ -18,7 +18,7 @@ public class PostPaymentEndpointTests
         StringContent content = GetWorkingCardRequestContent();
 
         // Act
-        var response = await client.PostAsync($"/api/Payments/", content);
+        var response = await client.PostAsync("/api/Payments/", content);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -33,8 +33,8 @@ public class PostPaymentEndpointTests
         StringContent content = GetWorkingCardRequestContent();
 
         // Act
-        var response = await client.PostAsync($"/api/Payments/", content);
-        var responseContent = response.Content.ReadAsStringAsync().Result;
+        var response = await client.PostAsync("/api/Payments/", content);
+        var responseContent = await response.Content.ReadAsStringAsync();
         var paymentResponse = JsonConvert.DeserializeObject<GetPaymentResponse>(responseContent);
 
         // Assert
@@ -55,7 +55,7 @@ public class PostPaymentEndpointTests
         var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
         // Act
-        var response = await client.PostAsync($"/api/Payments/", content);
+        var response = await client.PostAsync("/api/Payments/", content);
         var paymentResponse = await response.Content.ReadAsStringAsync();
 
         // Assert
@@ -75,7 +75,7 @@ public class PostPaymentEndpointTests
         return content;
     }
 
-    private static readonly PostPaymentRequest DefaultRequest = new PostPaymentRequest
+    private static readonly PostPaymentRequest DefaultRequest = new()
     {
         RequestId = Guid.NewGuid(),
         CardNumber = 2222405343248877,

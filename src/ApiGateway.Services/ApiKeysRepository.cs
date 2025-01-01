@@ -6,7 +6,7 @@ namespace PaymentGateway.Services;
 
 public class ApiKeysRepository : IApiKeysRepository
 {
-    private Dictionary<string, string> _apiKeys = new()
+    private readonly Dictionary<string, string> _apiKeys = new()
     {
         { "key-123456", "merchant1"  },
         { "key-789012",  "merchant2" }

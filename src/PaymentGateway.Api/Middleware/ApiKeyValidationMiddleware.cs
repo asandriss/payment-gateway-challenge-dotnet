@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
-
-using PaymentGateway.Abstraction;
+﻿using PaymentGateway.Abstraction;
 
 namespace PaymentGateway.Api.Middleware;
 

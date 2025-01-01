@@ -11,7 +11,7 @@ namespace PaymentGateway.Api.Tests;
 
 public class PaymentsControllerTestFactory
 {
-    public static HttpClient GetWebClient(PaymentsRepository paymentsRepository = null, bool useRealPaymentProcessor = false)
+    public static HttpClient GetWebClient(PaymentsRepository? paymentsRepository = null, bool useRealPaymentProcessor = false)
     {
         var repo = paymentsRepository ?? new PaymentsRepository();
         var webApplicationFactory = new WebApplicationFactory<PaymentsController>();

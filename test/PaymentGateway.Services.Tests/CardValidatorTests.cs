@@ -8,7 +8,7 @@ namespace PaymentGateway.Api.Tests.Services;
 
 public class CardValidatorTests
 {
-    private readonly CardValidator _validator = new CardValidator(new CurrencyProvider());
+    private readonly CardValidator _validator = new(new CurrencyProvider());
 
     [Theory]
     [InlineData(2222405343248877, true)]

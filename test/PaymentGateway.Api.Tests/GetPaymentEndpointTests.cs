@@ -1,7 +1,10 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
+
 using FluentAssertions;
+
 using Microsoft.AspNetCore.Mvc.Testing;
+
 using PaymentGateway.Abstraction.Enum;
 using PaymentGateway.Abstraction.Models;
 using PaymentGateway.Api.Controllers;
@@ -76,4 +79,3 @@ public class GetPaymentEndpointTests
 
 
 }
-

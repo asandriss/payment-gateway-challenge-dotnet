@@ -2,6 +2,7 @@ using PaymentGateway.Abstraction;
 using PaymentGateway.Api.Extensions;
 using PaymentGateway.Api.Middleware;
 using PaymentGateway.Services;
+
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);

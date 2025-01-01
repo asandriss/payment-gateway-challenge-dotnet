@@ -12,7 +12,7 @@ public class MapsterConfig
 
     public static void ConfigureMappings()
     {
-        if(s_isConfigured) return;
+        if (s_isConfigured) return;
 
         lock (Lock)
         {

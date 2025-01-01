@@ -1,5 +1,7 @@
 ﻿using BuildingBlocks;
+
 using LanguageExt;
+
 using Mapster;
 
 using Microsoft.Extensions.Logging;
@@ -17,57 +19,23 @@ public class PaymentProcessorService(
     : IPaymentProcessor
 {
     public async Task<Either<PaymentProcessorResponse, string>> ProcessPayment(PaymentProcessorRequest request)
+{
+    logger.LogInformation("PaymentProcessorService received a request: {request}", request);
+
+    var cardValidator = new CardValidator(new CurrencyProvider());
+
+    var validationResult = cardValidator.ValidateRequest(request);
+    logger.LogInformation("PaymentProcessorService completed validation with: {validationResult}", validationResult);
+
+    if (validationResult.IsFail)
     {
-        logger.LogInformation("PaymentProcessorService received a request: {request}", request);
+        var allErrors = validationResult.Match(
+            Fail: err => err.AsIterable().Select(e => e.ToString()).ToArray(),
+            Succ: _ => []
+        );
 
-        var cardValidator = new CardValidator(new CurrencyProvider());
+        logger.LogInformation("Validation failed for request {id}. The following errors were found: {allErrors}", request.RequestId, allErrors);
 
-        var validationResult = cardValidator.ValidateRequest(request);
-        logger.LogInformation("PaymentProcessorService completed validation with: {validationResult}", validationResult);
-
-        if (validationResult.IsFail)
-        {
-            var allErrors = validationResult.Match(
-                Fail: err => err.AsIterable().Select(e => e.ToString()).ToArray(),
-                Succ: _ => []
-            );
-
-            logger.LogInformation("Validation failed for request {id}. The following errors were found: {allErrors}", request.RequestId, allErrors);
-
-            var payment = new PostPaymentResponse
-            {
-                Amount = request.Amount,
-                CardNumberLastFour = request.CardNumber.GetLastFourDigits(),
-                Currency = request.Currency,
-                ExpiryMonth = request.ExpiryMonth,
-                ExpiryYear = request.ExpiryYear,
-                Id = Guid.NewGuid(),
-                RequestId = request.RequestId,
-                Status = PaymentStatus.Rejected
-            };
-
-            paymentDb.Add(payment);
-
-            return string.Join("; ", allErrors);
-        }
-        
-        var bankRequest = request.Adapt<BankCardRequest>();
-        logger.LogInformation("PaymentProcessorService is ready to call the bank service with request: {bankRequest}", bankRequest);
-        var bankResponse = await bankService.ProcessCreditCardPayment(bankRequest);
-
-        logger.LogInformation("PaymentProcessorService is ready to write data to the database: {bankResponse}", bankResponse);
-        WriteResultsToTheDb(bankResponse, request, paymentDb);
-
-        var result = new PaymentProcessorResponse(bankResponse.Authorized ? PaymentStatus.Authorized : PaymentStatus.Declined,  Guid.Parse(bankResponse.AuthorizationCode), request.RequestId);
-
-        logger.LogInformation("PaymentProcessorService has completed with result {result}", result);
-        return result;
-    }
-
-    private void WriteResultsToTheDb(BankCardResponse bankResponse, PaymentProcessorRequest request,
-        IPaymentsRepository paymentsRepository)
-    {
-        logger.LogInformation("PaymentProcessorService writing data to the database: {request}, {bankResponse}", request, bankResponse);
         var payment = new PostPaymentResponse
         {
             Amount = request.Amount,
@@ -75,11 +43,45 @@ public class PaymentProcessorService(
             Currency = request.Currency,
             ExpiryMonth = request.ExpiryMonth,
             ExpiryYear = request.ExpiryYear,
-            Id = string.IsNullOrWhiteSpace(bankResponse.AuthorizationCode) ? Guid.Empty : Guid.Parse(bankResponse.AuthorizationCode),
+            Id = Guid.NewGuid(),
             RequestId = request.RequestId,
-            Status = bankResponse.Authorized ? PaymentStatus.Authorized : PaymentStatus.Declined,
+            Status = PaymentStatus.Rejected
         };
-        
-        paymentsRepository.Add(payment);
+
+        paymentDb.Add(payment);
+
+        return string.Join("; ", allErrors);
     }
+
+    var bankRequest = request.Adapt<BankCardRequest>();
+    logger.LogInformation("PaymentProcessorService is ready to call the bank service with request: {bankRequest}", bankRequest);
+    var bankResponse = await bankService.ProcessCreditCardPayment(bankRequest);
+
+    logger.LogInformation("PaymentProcessorService is ready to write data to the database: {bankResponse}", bankResponse);
+    WriteResultsToTheDb(bankResponse, request, paymentDb);
+
+    var result = new PaymentProcessorResponse(bankResponse.Authorized ? PaymentStatus.Authorized : PaymentStatus.Declined, Guid.Parse(bankResponse.AuthorizationCode), request.RequestId);
+
+    logger.LogInformation("PaymentProcessorService has completed with result {result}", result);
+    return result;
+}
+
+private void WriteResultsToTheDb(BankCardResponse bankResponse, PaymentProcessorRequest request,
+    IPaymentsRepository paymentsRepository)
+{
+    logger.LogInformation("PaymentProcessorService writing data to the database: {request}, {bankResponse}", request, bankResponse);
+    var payment = new PostPaymentResponse
+    {
+        Amount = request.Amount,
+        CardNumberLastFour = request.CardNumber.GetLastFourDigits(),
+        Currency = request.Currency,
+        ExpiryMonth = request.ExpiryMonth,
+        ExpiryYear = request.ExpiryYear,
+        Id = string.IsNullOrWhiteSpace(bankResponse.AuthorizationCode) ? Guid.Empty : Guid.Parse(bankResponse.AuthorizationCode),
+        RequestId = request.RequestId,
+        Status = bankResponse.Authorized ? PaymentStatus.Authorized : PaymentStatus.Declined,
+    };
+
+    paymentsRepository.Add(payment);
+}
 }

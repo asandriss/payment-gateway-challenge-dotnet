@@ -21,7 +21,7 @@ public class CardValidatorTests
     public void TestCardValidationRules(long input, bool expected)
     {
         var result = _validator.ValidateCardNumber(input).Match(
-            card => true, 
+            card => true,
             err => false);
 
         result.Should().Be(expected);
@@ -75,14 +75,14 @@ public class CardValidatorTests
     {
         _validator.ValidateExpirationYear(DateTime.UtcNow.Year).IsSuccess.Should().BeTrue();
         _validator.ValidateExpirationYear(DateTime.UtcNow.Year + 1).IsSuccess.Should().BeTrue();
-            
+
         _validator.ValidateExpirationYear(DateTime.UtcNow.Year - 1).IsSuccess.Should().BeFalse();
     }
 
     [Fact]
     public void TestExpiryDateValidation()
     {
-        SystemDateTime.ForceDateTimeProvider(() => new DateTime(2024, 11, 30, 12, 0, 0 ));
+        SystemDateTime.ForceDateTimeProvider(() => new DateTime(2024, 11, 30, 12, 0, 0));
 
         _validator.ValidateExpirationDate(11, 2024).IsSuccess.Should().BeTrue();        // debatable - we need to clarify requirements "should be in the future". If it's in the current month should still be valid.
         _validator.ValidateExpirationDate(12, 2024).IsSuccess.Should().BeTrue();

@@ -1,8 +1,12 @@
 ﻿using System.Net;
 using System.Text;
+
 using BuildingBlocks;
+
 using FluentAssertions;
+
 using Newtonsoft.Json;
+
 using PaymentGateway.Abstraction.Models;
 using PaymentGateway.Api.Models.Responses;
 
@@ -50,7 +54,7 @@ public class PostPaymentEndpointTests
 
         var client = PaymentsControllerTestFactory.GetWebClient(useRealPaymentProcessor: true);
         client.DefaultRequestHeaders.Add("Authorization", "key-123456");
-            
+
         var jsonRequest = JsonConvert.SerializeObject(request);
         var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
@@ -71,7 +75,7 @@ public class PostPaymentEndpointTests
         var request = DefaultRequest;
         var jsonRequest = JsonConvert.SerializeObject(request);
         var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-            
+
         return content;
     }
 
@@ -85,52 +89,52 @@ public class PostPaymentEndpointTests
         Amount = 100,
         Cvv = 123
     };
-        
+
     public static IEnumerable<object[]> PostPaymentValidationTestSuite()
     {
         yield return
         [
-            DefaultRequest with {Amount = 0},
+            DefaultRequest with { Amount = 0 },
             "Amount must be greater than zero. Was: [0]"
         ];
         yield return
         [
-            DefaultRequest with {Amount = -1},
+            DefaultRequest with { Amount = -1 },
             "Amount must be greater than zero. Was: [-1]"
         ];
         yield return
         [
-            DefaultRequest with {CardNumber = 0},
+            DefaultRequest with { CardNumber = 0 },
             "Credit card number must be between 14 and 19 characters long. Was: [1] characters long"
         ];
         yield return
         [
-            DefaultRequest with {CardNumber = -2222405343248877},
+            DefaultRequest with { CardNumber = -2222405343248877 },
             "Negative card number provided: [-2222405343248877]"
         ];
         yield return
         [
-            DefaultRequest with {CardNumber = 2222405343248870},
+            DefaultRequest with { CardNumber = 2222405343248870 },
             "Luhn checksum check failed for card [2222405343248870]"
         ];
         yield return
         [
-            DefaultRequest with {Currency = "JPY"},
+            DefaultRequest with { Currency = "JPY" },
             "Unsupported currency [JPY]"
         ];
         yield return
         [
-            DefaultRequest with {ExpiryYear = 2024, ExpiryMonth = 9},
+            DefaultRequest with { ExpiryYear = 2024, ExpiryMonth = 9 },
             "Card expired"
         ];
         yield return
         [
-            DefaultRequest with {Cvv = 1},
+            DefaultRequest with { Cvv = 1 },
             "CVV must be between 3 and 4 characters long. Was: [1]"
         ];
         yield return
         [
-            DefaultRequest with {Cvv = 12345},
+            DefaultRequest with { Cvv = 12345 },
             "CVV must be between 3 and 4 characters long. Was: [12345]"
         ];
     }

@@ -8,8 +8,8 @@ public class ApiKeysRepository : IApiKeysRepository
 {
     private Dictionary<string, string> _apiKeys = new()
     {
-        { "key-123456", "merchant1"  },
-        { "key-789012",  "merchant2" }
+        { "key-123456", "merchant1" },
+        { "key-789012", "merchant2" }
     };
 
     public Option<string> GetMerchantId(string apiKey)

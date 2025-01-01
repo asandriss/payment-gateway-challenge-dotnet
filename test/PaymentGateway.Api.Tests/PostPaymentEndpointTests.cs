@@ -4,7 +4,6 @@ using BuildingBlocks;
 using FluentAssertions;
 using Newtonsoft.Json;
 using PaymentGateway.Abstraction.Models;
-using PaymentGateway.Api.Models.Responses;
 
 namespace PaymentGateway.Api.Tests;
 

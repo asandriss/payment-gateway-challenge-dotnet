@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PaymentGateway.Abstraction.Models;
+﻿namespace PaymentGateway.Abstraction.Models;
 
 public record PaymentProcessorRequest(
     Guid RequestId,

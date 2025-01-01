@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using PaymentGateway.Abstraction.Enum;
 using PaymentGateway.Abstraction.Models;
 using PaymentGateway.Api.Controllers;
-using PaymentGateway.Api.Models.Responses;
 using PaymentGateway.Services;
 
 namespace PaymentGateway.Api.Tests;

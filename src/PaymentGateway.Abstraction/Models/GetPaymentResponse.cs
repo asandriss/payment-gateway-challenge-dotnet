@@ -1,6 +1,6 @@
 ﻿using PaymentGateway.Abstraction.Enum;
 
-namespace PaymentGateway.Api.Models.Responses;
+namespace PaymentGateway.Abstraction.Models;
 
 public record GetPaymentResponse
 {

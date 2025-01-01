@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using PaymentGateway.Abstraction;
 using PaymentGateway.Abstraction.Models;
 using PaymentGateway.Api.Extensions;
-using PaymentGateway.Api.Models.Responses;
 using PaymentGateway.Services;
 
 namespace PaymentGateway.Api.Controllers;

@@ -30,7 +30,6 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

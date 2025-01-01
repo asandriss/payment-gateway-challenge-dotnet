@@ -32,9 +32,22 @@ public class PaymentProcessorService(
                 Succ: _ => []
             );
 
-            // This SHOULD NOT BE a warning. I made it so to stand out, should update it back to information.
-            logger.LogWarning("Validation failed for request {id}. The following errors were found: {allErrors}", request.RequestId, allErrors);
-            // ToDo: Write the failed request into DB
+            logger.LogInformation("Validation failed for request {id}. The following errors were found: {allErrors}", request.RequestId, allErrors);
+
+            var payment = new PostPaymentResponse
+            {
+                Amount = request.Amount,
+                CardNumberLastFour = request.CardNumber.GetLastFourDigits(),
+                Currency = request.Currency,
+                ExpiryMonth = request.ExpiryMonth,
+                ExpiryYear = request.ExpiryYear,
+                Id = Guid.NewGuid(),
+                RequestId = request.RequestId,
+                Status = PaymentStatus.Rejected
+            };
+
+            paymentDb.Add(payment);
+
             return string.Join("; ", allErrors);
         }
         
